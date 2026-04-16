@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: travel
+
+  # 数据库配置（你的没问题）
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/travel?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: zhjqwf99
+
+  # Redis 配置（4.x 正确写法）
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+      timeout: 6000ms  # 连接超时时间
+      # 连接池配置（必须配，否则 commons-pool2 依赖白加了）
+      lettuce:
+        pool:
+          max-active: 8      # 最大连接数
+          max-idle: 8        # 最大空闲连接
+          min-idle: 0        # 最小空闲连接
+          max-wait: 1000ms   # 获取连接最大等待时间
+
+  # 关键：显式指定使用 Redis 作为缓存管理器
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000  # 缓存默认过期时间 10分钟（毫秒）
+      cache-null-values: false  # 不缓存 null 值
+
+# MyBatis 配置（你的没问题，建议加日志）
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 打印 SQL 到控制台
+
+# 日志配置（推荐添加）
+logging:
+  level:
+    com.travel.mapper: debug      # 查看 SQL
+    org.springframework.cache: debug  # 查看缓存命中情况
+    com.travel.service: info
+  pattern:
+    console: "%d{HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 服务器端口（可选，默认8080）
+server:
+  port: 8080
