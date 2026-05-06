@@ -3,6 +3,7 @@ package com.travel.controller;
 import com.travel.entity.UserInterest;
 import com.travel.entity.dto.Result;
 import com.travel.service.UserInterestService;
+import com.travel.util.UserContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -85,5 +86,17 @@ public class UserInterestController {
 
         userInterestService.clearInterestCache(userId);
         return Result.success(null, "缓存已清除");
+    }
+
+    // UserInterestController 新增：获取"当前登录用户"的兴趣
+    @GetMapping("/me/interests")
+    @Operation(summary = "获取当前登录用户的兴趣列表")
+    public Result<List<UserInterest>> getMyInterests() {
+        Long userId = UserContext.getUserId();
+        if (userId == null) {
+            return Result.error(401, "未登录");
+        }
+        List<UserInterest> list = userInterestService.getUserInterestList(userId);
+        return Result.success(list);
     }
 }
